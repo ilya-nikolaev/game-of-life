@@ -143,7 +143,9 @@ void ui_deinit(UI *ui)
 
 void ui_run(UI *ui)
 {
-    double max_delay = 1000.0 / ui->max_FPS;
+    double max_delay = (ui->max_FPS == 0)
+        ? 0.0
+        : 1000.0 / ui->max_FPS;
 
     uint32_t prev = SDL_GetTicks();
 
