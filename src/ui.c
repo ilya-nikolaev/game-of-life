@@ -149,14 +149,14 @@ void ui_run(UI *ui)
 
     while (ui->is_running)
     {
+        process_events(ui);
+        draw(ui);
+
         uint32_t curr = SDL_GetTicks();
         uint32_t delta = curr - prev;
 
         if (delta >= max_delay)
         {
-            draw(ui);
-            process_events(ui);
-
             if (!(ui->is_paused))
                 game_step(ui->game);
 
