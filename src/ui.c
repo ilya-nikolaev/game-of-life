@@ -37,8 +37,8 @@ void process_keyboard_event(UI *ui, SDL_KeyboardEvent *event)
 }
 
 void update_camera_position(UI *ui, uint32_t camera_drag_end_x, uint32_t camera_drag_end_y) {
-    int32_t dx = camera_drag_end_x - ui->camera_drag_start_x;
-    int32_t dy = camera_drag_end_y - ui->camera_drag_start_y;
+    int32_t dx = ui->camera_drag_start_x - camera_drag_end_x;
+    int32_t dy = ui->camera_drag_start_y - camera_drag_end_y;
 
     ui->camera_position = (
         ui->camera_position +
