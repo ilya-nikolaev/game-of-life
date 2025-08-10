@@ -41,7 +41,7 @@ cmake .. && make
       Support definitions like `x == 5`, `y == x`, `(x + y) % 2 == 0`
 
 - [ ] **Camera Control**  
-      Pan around the board via arrow keys
+      Pan around the board via MMB
 
 - [ ] **Zoom Functionality**  
       Allow zooming in/out with `-` and `=` keys
