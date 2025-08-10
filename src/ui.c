@@ -36,6 +36,21 @@ void process_keyboard_event(UI *ui, SDL_KeyboardEvent *event)
     }
 }
 
+void update_camera_position(UI *ui, uint32_t camera_drag_end_x, uint32_t camera_drag_end_y) {
+    int32_t dx = camera_drag_end_x - ui->camera_drag_start_x;
+    int32_t dy = camera_drag_end_y - ui->camera_drag_start_y;
+
+    ui->camera_position = (
+        ui->camera_position +
+        dx + dy * ui->game->width +
+        ui->game->count
+    ) % ui->game->count;
+
+    ui->camera_drag_start_x = camera_drag_end_x;
+    ui->camera_drag_start_y = camera_drag_end_y;
+}
+
+
 void process_mouse_event(UI *ui, SDL_MouseButtonEvent *event, bool pressed)
 {
     switch (event->button)
@@ -51,18 +66,15 @@ void process_mouse_event(UI *ui, SDL_MouseButtonEvent *event, bool pressed)
             ui->game->cells[event->x + event->y * ui->game->width] = false;
         break;
     case SDL_BUTTON_MIDDLE:
-        if (ui->is_MMB_pressed == pressed) break;
+        if (!(ui->is_MMB_pressed || pressed)) break;
+
+        if (pressed && !ui->is_MMB_pressed) {
+            ui->camera_drag_start_x = event->x;
+            ui->camera_drag_start_y = event->y;
+        } else update_camera_position(ui, event->x, event->y);
 
         ui->is_MMB_pressed = pressed;
 
-        if (pressed) 
-            ui->camera_drag_start_index = event->x + event->y * ui->game->width;
-        else {
-            start_y = ui->camera_drag_start_index / ui->game->width;
-            start_x = ui->camera_drag_start_index % ui->game->width;
-            ui->camera_shift_x = (ui->camera_shift_x + event->x - start_x) % ui->game->width;
-            ui->camera_shift_y = (ui->camera_shift_y + event->y - start_y) % ui->game->height;
-        };
         break;
     default:
         break;
@@ -75,6 +87,8 @@ void process_mouse_motion_event(UI *ui, SDL_MouseMotionEvent *event)
         ui->game->cells[event->x + event->y * ui->game->width] = 1;
     else if (ui->is_RMB_pressed)
         ui->game->cells[event->x + event->y * ui->game->width] = 0;
+    else if (ui->is_MMB_pressed)
+        update_camera_position(ui, event->x, event->y);
 }
 
 void process_events(UI *ui)
@@ -108,13 +122,16 @@ void process_events(UI *ui)
 
 void draw(UI *ui)
 {
-    for (size_t i = 0; i < ui->game->count; ++i)
-        ui->pixels[i] = ui->game->cells[i] ? ui->primary_color : ui->background_color;
+    for (size_t index = 0; index < ui->game->count; ++index) {
+        uint32_t target_index = (index + ui->camera_position) % ui->game->count;
+        ui->pixels[index] = ui->game->cells[target_index] ? ui->primary_color : ui->background_color;
+    }
 
     SDL_UpdateTexture(ui->texture, NULL, ui->pixels, ui->game->width * sizeof(uint32_t));
     SDL_RenderCopy(ui->renderer, ui->texture, NULL, NULL);
     SDL_RenderPresent(ui->renderer);
 }
+
 
 void ui_init(UI *ui, Game *game, uint8_t max_FPS, uint32_t primary_color, uint32_t background_color)
 {
