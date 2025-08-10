@@ -24,6 +24,10 @@ typedef struct UI
     bool is_LMB_pressed;
     bool is_RMB_pressed;
 
+    uint32_t camera_drag_start_index;
+    uint32_t camera_shift_x;
+    uint32_t camera_shift_y;
+
     uint32_t primary_color;
     uint32_t background_color;
 } UI;

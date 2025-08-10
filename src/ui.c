@@ -50,6 +50,20 @@ void process_mouse_event(UI *ui, SDL_MouseButtonEvent *event, bool pressed)
         if (pressed)
             ui->game->cells[event->x + event->y * ui->game->width] = false;
         break;
+    case SDL_BUTTON_MIDDLE:
+        if (ui->is_MMB_pressed == pressed) break;
+
+        ui->is_MMB_pressed = pressed;
+
+        if (pressed) 
+            ui->camera_drag_start_index = event->x + event->y * ui->game->width;
+        else {
+            start_y = ui->camera_drag_start_index / ui->game->width;
+            start_x = ui->camera_drag_start_index % ui->game->width;
+            ui->camera_shift_x = (ui->camera_shift_x + event->x - start_x) % ui->game->width;
+            ui->camera_shift_y = (ui->camera_shift_y + event->y - start_y) % ui->game->height;
+        };
+        break;
     default:
         break;
     }
