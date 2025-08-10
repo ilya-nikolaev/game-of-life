@@ -37,11 +37,11 @@ cmake .. && make
 
 ## TO-DO
 
-- [ ] **Symbolic Positioning**  
+- [ ] **Symbolic Positioning**
       Support definitions like `x == 5`, `y == x`, `(x + y) % 2 == 0`
 
-- [X] **Camera Control**  
+- [X] **Camera Control**
       Pan around the board via MMB
 
-- [ ] **Zoom Functionality**  
+- [ ] **Zoom Functionality**
       Allow zooming in/out with `-` and `=` keys
