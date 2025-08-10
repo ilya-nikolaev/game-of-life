@@ -40,7 +40,7 @@ cmake .. && make
 - [ ] **Symbolic Positioning**  
       Support definitions like `x == 5`, `y == x`, `(x + y) % 2 == 0`
 
-- [ ] **Camera Control**  
+- [X] **Camera Control**  
       Pan around the board via MMB
 
 - [ ] **Zoom Functionality**  
