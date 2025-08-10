@@ -154,6 +154,12 @@ void ui_init(UI *ui, Game *game, uint8_t max_FPS, uint32_t primary_color, uint32
 
     ui->is_LMB_pressed = false;
     ui->is_RMB_pressed = false;
+    ui->is_MMB_pressed = false;
+
+    ui->camera_drag_start_x = 0;
+    ui->camera_drag_start_y = 0;
+
+    ui->camera_position = 0;
 
     ui->primary_color = primary_color;
     ui->background_color = background_color;
