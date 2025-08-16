@@ -7,8 +7,7 @@
 
 typedef uint16_t RulesBitmap16;
 
-typedef struct Game
-{
+typedef struct Game {
     bool *cells;
     bool *backbuffer;
 
@@ -20,7 +19,10 @@ typedef struct Game
     RulesBitmap16 survival;
 } Game;
 
-void game_init(Game *game, size_t width, size_t height, RulesBitmap16 birth, RulesBitmap16 survival);
+void game_init(
+    Game *game, size_t width, size_t height, RulesBitmap16 birth,
+    RulesBitmap16 survival
+);
 void game_deinit(Game *game);
 
 void game_step(Game *game);

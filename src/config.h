@@ -3,8 +3,7 @@
 
 #include "core.h"
 
-typedef struct Rules
-{
+typedef struct Rules {
     RulesBitmap16 birth;
     RulesBitmap16 survival;
 } Rules;
