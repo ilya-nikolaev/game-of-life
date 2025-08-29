@@ -40,12 +40,13 @@ uint32_t config_parse_color(char *hex_color) {
     while (*hex_color == '#')
         hex_color++;
 
-    uint32_t color = 0xFF000000;
+    char c;
+    uint32_t value, color = 0xFF000000;
 
-    for (int i = 1; i <= 6 && hex_color[i]; ++i) {
-        char c = hex_color[i];
+    for (int i = 0; i < 6; ++i) {
+        if ((c = hex_color[i]) == 0)
+            break;
 
-        uint32_t value;
         if (c >= '0' && c <= '9')
             value = c - '0';
         else if (c >= 'A' && c <= 'F')
@@ -55,7 +56,7 @@ uint32_t config_parse_color(char *hex_color) {
         else
             return 0; // Black
 
-        color |= value << ((6 - i) * 4);
+        color |= value << ((5 - i) * 4);
     }
 
     return color;
