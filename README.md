@@ -45,3 +45,6 @@ cmake .. && make
 
 - [ ] **Zoom Functionality**
       Allow zooming in/out with `-` and `=` keys
+
+- [ ] **Grid**
+      Allow to enable grid with zoom >= 3
