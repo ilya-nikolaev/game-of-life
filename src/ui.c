@@ -3,17 +3,17 @@
 #include "core.h"
 #include "ui.h"
 
-void fill_field(UI *ui) {
+static void fill_field(UI *ui) {
     for (size_t i = 0; i < ui->game->count; ++i)
         ui->game->cells[i] = rand() % 100 < ui->filling_percentage;
 }
 
-void clear_field(UI *ui) {
+static void clear_field(UI *ui) {
     for (size_t i = 0; i < ui->game->count; ++i)
         ui->game->cells[i] = false;
 }
 
-void process_keyboard_event(UI *ui, SDL_KeyboardEvent *event) {
+static void process_keyboard_event(UI *ui, SDL_KeyboardEvent *event) {
     switch (event->keysym.sym) {
     case SDLK_ESCAPE:
         ui->is_running = 0;
@@ -32,7 +32,7 @@ void process_keyboard_event(UI *ui, SDL_KeyboardEvent *event) {
     }
 }
 
-void update_camera_position(
+static void update_camera_position(
     UI *ui, uint32_t camera_drag_curr_x, uint32_t camera_drag_curr_y
 ) {
     int32_t dx = ui->camera_drag_prev_x - camera_drag_curr_x;
@@ -46,7 +46,8 @@ void update_camera_position(
     ui->camera_drag_prev_y = camera_drag_curr_y;
 }
 
-void process_mouse_event(UI *ui, SDL_MouseButtonEvent *event, bool pressed) {
+static void
+process_mouse_event(UI *ui, SDL_MouseButtonEvent *event, bool pressed) {
     switch (event->button) {
     case SDL_BUTTON_LEFT:
         if (pressed)
@@ -75,7 +76,7 @@ void process_mouse_event(UI *ui, SDL_MouseButtonEvent *event, bool pressed) {
     }
 }
 
-void process_mouse_motion_event(UI *ui, SDL_MouseMotionEvent *event) {
+static void process_mouse_motion_event(UI *ui, SDL_MouseMotionEvent *event) {
     if (ui->is_LMB_pressed)
         ui->game->cells[event->x + event->y * ui->game->width] = 1;
     else if (ui->is_RMB_pressed)
@@ -84,7 +85,7 @@ void process_mouse_motion_event(UI *ui, SDL_MouseMotionEvent *event) {
         update_camera_position(ui, event->x, event->y);
 }
 
-void process_events(UI *ui) {
+static void process_events(UI *ui) {
     SDL_Event event;
 
     while (SDL_PollEvent(&event)) {
@@ -110,7 +111,7 @@ void process_events(UI *ui) {
     }
 }
 
-void draw(UI *ui) {
+static void draw(UI *ui) {
     for (size_t index = 0; index < ui->game->count; ++index) {
         uint32_t target_index =
             (index + ui->camera_position) % ui->game->count;
