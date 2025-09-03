@@ -33,43 +33,42 @@ void process_keyboard_event(UI *ui, SDL_KeyboardEvent *event) {
 }
 
 void update_camera_position(
-    UI *ui, uint32_t camera_drag_end_x, uint32_t camera_drag_end_y
+    UI *ui, uint32_t camera_drag_curr_x, uint32_t camera_drag_curr_y
 ) {
-    int32_t dx = ui->camera_drag_start_x - camera_drag_end_x;
-    int32_t dy = ui->camera_drag_start_y - camera_drag_end_y;
+    int32_t dx = ui->camera_drag_prev_x - camera_drag_curr_x;
+    int32_t dy = ui->camera_drag_prev_y - camera_drag_curr_y;
 
     ui->camera_position =
         (ui->camera_position + dx + dy * ui->game->width + ui->game->count) %
         ui->game->count;
 
-    ui->camera_drag_start_x = camera_drag_end_x;
-    ui->camera_drag_start_y = camera_drag_end_y;
+    ui->camera_drag_prev_x = camera_drag_curr_x;
+    ui->camera_drag_prev_y = camera_drag_curr_y;
 }
 
 void process_mouse_event(UI *ui, SDL_MouseButtonEvent *event, bool pressed) {
     switch (event->button) {
     case SDL_BUTTON_LEFT:
-        ui->is_LMB_pressed = pressed;
         if (pressed)
             ui->game->cells[event->x + event->y * ui->game->width] = true;
+
+        ui->is_LMB_pressed = pressed;
         break;
     case SDL_BUTTON_RIGHT:
-        ui->is_RMB_pressed = pressed;
         if (pressed)
             ui->game->cells[event->x + event->y * ui->game->width] = false;
+
+        ui->is_RMB_pressed = pressed;
         break;
     case SDL_BUTTON_MIDDLE:
-        if (!(ui->is_MMB_pressed || pressed))
-            break;
-
         if (pressed && !ui->is_MMB_pressed) {
-            ui->camera_drag_start_x = event->x;
-            ui->camera_drag_start_y = event->y;
-        } else
+            ui->camera_drag_prev_x = event->x;
+            ui->camera_drag_prev_y = event->y;
+        } else if (pressed) {
             update_camera_position(ui, event->x, event->y);
+        }
 
         ui->is_MMB_pressed = pressed;
-
         break;
     default:
         break;
@@ -157,8 +156,8 @@ void ui_init(
     ui->is_RMB_pressed = false;
     ui->is_MMB_pressed = false;
 
-    ui->camera_drag_start_x = 0;
-    ui->camera_drag_start_y = 0;
+    ui->camera_drag_prev_x = 0;
+    ui->camera_drag_prev_y = 0;
 
     ui->camera_position = 0;
 

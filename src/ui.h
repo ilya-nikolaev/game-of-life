@@ -24,8 +24,8 @@ typedef struct UI {
     bool is_RMB_pressed;
     bool is_MMB_pressed;
 
-    uint32_t camera_drag_start_x;
-    uint32_t camera_drag_start_y;
+    uint32_t camera_drag_prev_x;
+    uint32_t camera_drag_prev_y;
 
     uint32_t camera_position;
 
