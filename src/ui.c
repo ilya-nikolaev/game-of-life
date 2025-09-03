@@ -3,6 +3,14 @@
 #include "core.h"
 #include "ui.h"
 
+static inline uint32_t get_cell_index(UI *ui, uint32_t pixel_index) {
+    return (pixel_index + ui->camera_position) % ui->game->count;
+}
+
+static inline uint32_t get_cell_value(UI *ui, uint32_t pixel_index) {
+    return ui->game->cells[get_cell_index(ui, pixel_index)];
+}
+
 static void fill_field(UI *ui) {
     for (size_t i = 0; i < ui->game->count; ++i)
         ui->game->cells[i] = rand() % 100 < ui->filling_percentage;
@@ -111,14 +119,14 @@ static void process_events(UI *ui) {
     }
 }
 
+static inline uint32_t get_cell_color(UI *ui, uint32_t pixel_index) {
+    uint32_t value = get_cell_value(ui, pixel_index);
+    return value ? ui->primary_color : ui->background_color;
+}
+
 static void draw(UI *ui) {
-    for (size_t index = 0; index < ui->game->count; ++index) {
-        uint32_t target_index =
-            (index + ui->camera_position) % ui->game->count;
-        ui->pixels[index] = ui->game->cells[target_index]
-            ? ui->primary_color
-            : ui->background_color;
-    }
+    for (size_t index = 0; index < ui->game->count; ++index)
+        ui->pixels[index] = get_cell_color(ui, index);
 
     SDL_UpdateTexture(
         ui->texture, NULL, ui->pixels, ui->game->width * sizeof(uint32_t)
