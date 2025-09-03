@@ -11,6 +11,11 @@ static inline uint32_t get_cell_value(UI *ui, uint32_t pixel_index) {
     return ui->game->cells[get_cell_index(ui, pixel_index)];
 }
 
+static inline uint32_t
+set_cell_value(UI *ui, uint32_t pixel_index, bool value) {
+    ui->game->cells[get_cell_index(ui, pixel_index)] = value;
+}
+
 static void fill_field(UI *ui) {
     for (size_t i = 0; i < ui->game->count; ++i)
         ui->game->cells[i] = rand() % 100 < ui->filling_percentage;
@@ -59,13 +64,13 @@ process_mouse_event(UI *ui, SDL_MouseButtonEvent *event, bool pressed) {
     switch (event->button) {
     case SDL_BUTTON_LEFT:
         if (pressed)
-            ui->game->cells[event->x + event->y * ui->game->width] = true;
+            set_cell_value(ui, event->x + event->y * ui->game->width, true);
 
         ui->is_LMB_pressed = pressed;
         break;
     case SDL_BUTTON_RIGHT:
         if (pressed)
-            ui->game->cells[event->x + event->y * ui->game->width] = false;
+            set_cell_value(ui, event->x + event->y * ui->game->width, false);
 
         ui->is_RMB_pressed = pressed;
         break;
@@ -86,9 +91,9 @@ process_mouse_event(UI *ui, SDL_MouseButtonEvent *event, bool pressed) {
 
 static void process_mouse_motion_event(UI *ui, SDL_MouseMotionEvent *event) {
     if (ui->is_LMB_pressed)
-        ui->game->cells[event->x + event->y * ui->game->width] = 1;
+        set_cell_value(ui, event->x + event->y * ui->game->width, true);
     else if (ui->is_RMB_pressed)
-        ui->game->cells[event->x + event->y * ui->game->width] = 0;
+        set_cell_value(ui, event->x + event->y * ui->game->width, false);
     else if (ui->is_MMB_pressed)
         update_camera_position(ui, event->x, event->y);
 }
