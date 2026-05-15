@@ -13,15 +13,12 @@ typedef struct UI {
     uint32_t *pixels;
 
     Game *game;
-    uint8_t filling_percentage;
 
     uint8_t max_FPS;
 
     bool is_running;
     bool is_paused;
 
-    bool is_LMB_pressed;
-    bool is_RMB_pressed;
     bool is_MMB_pressed;
 
     uint32_t camera_drag_prev_x;

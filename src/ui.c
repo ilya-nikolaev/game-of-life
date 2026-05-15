@@ -7,6 +7,8 @@
 const uint32_t PRIMARY_COLOR = 0x0000FF00;
 const uint32_t BACKGROUND_COLOR = 0x00000000;
 
+const uint8_t FILLING_PERCENTAGE = 0x33;
+
 static inline uint32_t get_cell_index(UI *ui, uint32_t pixel_index) {
     return (pixel_index + ui->camera_position) % ui->game->count;
 }
@@ -17,7 +19,7 @@ static inline uint32_t get_cell_value(UI *ui, uint32_t pixel_index) {
 
 static void fill_field(UI *ui) {
     for (size_t i = 0; i < ui->game->count; ++i)
-        ui->game->cells[i] = rand() % 100 < ui->filling_percentage;
+        ui->game->cells[i] = (rand() & 0xFF) < FILLING_PERCENTAGE;
 }
 
 static void clear_field(UI *ui) {
@@ -139,15 +141,11 @@ void ui_init(UI *ui, Game *game, uint8_t max_FPS) {
 
     ui->pixels = malloc(sizeof(uint32_t) * ui->game->count);
 
-    ui->filling_percentage = 20;
-
     ui->max_FPS = max_FPS;
 
     ui->is_running = true;
     ui->is_paused = false;
 
-    ui->is_LMB_pressed = false;
-    ui->is_RMB_pressed = false;
     ui->is_MMB_pressed = false;
 
     ui->camera_drag_prev_x = 0;
