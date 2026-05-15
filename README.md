@@ -22,6 +22,7 @@ This implementation is written in C99 using the standard library, unistd.h, and 
 - `C` - clear field
 - `LMB` - draw cells
 - `RMB` - erase cells
+- `MMB` - pan around the board
 
 ## Build
 
