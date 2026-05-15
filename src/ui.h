@@ -19,7 +19,7 @@ typedef struct UI {
     bool is_running;
     bool is_paused;
 
-    bool is_MMB_pressed;
+    bool is_LMB_pressed;
 
     uint32_t camera_drag_prev_x;
     uint32_t camera_drag_prev_y;

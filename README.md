@@ -20,7 +20,7 @@ This implementation is written in C99 using the standard library, unistd.h, and 
 - `Space` - pause
 - `R` - reset field
 - `C` - clear field
-- `MMB` - pan around the board
+- `LMB` - pan around the board
 
 ## Build
 
@@ -41,7 +41,7 @@ cmake .. && make
       Pan around the board via MMB
 
 - [ ] **Zoom Functionality**
-      Allow zooming in/out with `-` and `=` keys
+      Allow zooming in/out with `MWHEELUP` and `MWHEELDOWN` keys
 
 - [ ] **Grid**
       Allow to enable grid with zoom >= 3

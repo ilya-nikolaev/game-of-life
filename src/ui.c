@@ -63,15 +63,15 @@ static void update_camera_position(
 static void
 process_mouse_event(UI *ui, SDL_MouseButtonEvent *event, bool pressed) {
     switch (event->button) {
-    case SDL_BUTTON_MIDDLE:
-        if (pressed && !ui->is_MMB_pressed) {
+    case SDL_BUTTON_LEFT:
+        if (pressed && !ui->is_LMB_pressed) {
             ui->camera_drag_prev_x = event->x;
             ui->camera_drag_prev_y = event->y;
         } else if (pressed) {
             update_camera_position(ui, event->x, event->y);
         }
 
-        ui->is_MMB_pressed = pressed;
+        ui->is_LMB_pressed = pressed;
         break;
     default:
         break;
@@ -79,7 +79,7 @@ process_mouse_event(UI *ui, SDL_MouseButtonEvent *event, bool pressed) {
 }
 
 static void process_mouse_motion_event(UI *ui, SDL_MouseMotionEvent *event) {
-    if (ui->is_MMB_pressed)
+    if (ui->is_LMB_pressed)
         update_camera_position(ui, event->x, event->y);
 }
 
@@ -146,7 +146,7 @@ void ui_init(UI *ui, Game *game, uint8_t max_FPS) {
     ui->is_running = true;
     ui->is_paused = false;
 
-    ui->is_MMB_pressed = false;
+    ui->is_LMB_pressed = false;
 
     ui->camera_drag_prev_x = 0;
     ui->camera_drag_prev_y = 0;
