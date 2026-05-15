@@ -35,29 +35,3 @@ Rules config_parse_rules(char *rules_str) {
 
     return rules;
 }
-
-uint32_t config_parse_color(char *hex_color) {
-    while (*hex_color == '#')
-        hex_color++;
-
-    char c;
-    uint32_t value, color = 0xFF000000;
-
-    for (int i = 0; i < 6; ++i) {
-        if ((c = hex_color[i]) == 0)
-            break;
-
-        if (c >= '0' && c <= '9')
-            value = c - '0';
-        else if (c >= 'A' && c <= 'F')
-            value = c - 'A' + 10;
-        else if (c >= 'a' && c <= 'f')
-            value = c - 'a' + 10;
-        else
-            return 0; // Black
-
-        color |= value << ((5 - i) * 4);
-    }
-
-    return color;
-}

@@ -13,8 +13,6 @@ This implementation is written in C99 using the standard library, unistd.h, and 
 
 - `-r {string}` - game rules (e.g., `-r B368/S245`, default `B3/S23`)
 - `-f {int}` - maximum FPS (also determines ticks per second, default `24`)
-- `-c {hex}` - primary (cells) color (hex, default `00FF00`)
-- `-b {hex}` - background color (hex, default `000000`)
 
 ## Controls
 

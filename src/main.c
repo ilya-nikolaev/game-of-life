@@ -10,14 +10,13 @@
 int main(int argc, char *argv[]) {
     srand(time(NULL));
 
-    uint32_t primary_color = 0xFF00FF00, background_color = 0xFF000000;
     uint8_t max_FPS = 24;
 
     Rules rules;
     RulesBitmap16 birth = 1 << 3, survival = 1 << 2 | 1 << 3;
 
     int c;
-    while ((c = getopt(argc, argv, "r:f:c:b:")) != -1) {
+    while ((c = getopt(argc, argv, "r:f:")) != -1) {
         switch (c) {
         case 'r':
             rules = config_parse_rules(optarg);
@@ -26,12 +25,6 @@ int main(int argc, char *argv[]) {
             break;
         case 'f':
             max_FPS = (uint8_t)atoi(optarg);
-            break;
-        case 'c':
-            primary_color = config_parse_color(optarg);
-            break;
-        case 'b':
-            background_color = config_parse_color(optarg);
             break;
         default:
             break;
@@ -47,7 +40,7 @@ int main(int argc, char *argv[]) {
     game_init(&game, DM.w, DM.h, birth, survival);
 
     UI ui;
-    ui_init(&ui, &game, max_FPS, primary_color, background_color);
+    ui_init(&ui, &game, max_FPS);
 
     ui_run(&ui);
 

@@ -1,7 +1,11 @@
+#include <stdint.h>
 #include <stdlib.h>
 
 #include "core.h"
 #include "ui.h"
+
+const uint32_t PRIMARY_COLOR = 0x0000FF00;
+const uint32_t BACKGROUND_COLOR = 0x00000000;
 
 static inline uint32_t get_cell_index(UI *ui, uint32_t pixel_index) {
     return (pixel_index + ui->camera_position) % ui->game->count;
@@ -11,7 +15,7 @@ static inline uint32_t get_cell_value(UI *ui, uint32_t pixel_index) {
     return ui->game->cells[get_cell_index(ui, pixel_index)];
 }
 
-static inline uint32_t
+static inline void
 set_cell_value(UI *ui, uint32_t pixel_index, bool value) {
     ui->game->cells[get_cell_index(ui, pixel_index)] = value;
 }
@@ -126,7 +130,7 @@ static void process_events(UI *ui) {
 
 static inline uint32_t get_cell_color(UI *ui, uint32_t pixel_index) {
     uint32_t value = get_cell_value(ui, pixel_index);
-    return value ? ui->primary_color : ui->background_color;
+    return value ? PRIMARY_COLOR : BACKGROUND_COLOR;
 }
 
 static void draw(UI *ui) {
@@ -140,10 +144,7 @@ static void draw(UI *ui) {
     SDL_RenderPresent(ui->renderer);
 }
 
-void ui_init(
-    UI *ui, Game *game, uint8_t max_FPS, uint32_t primary_color,
-    uint32_t background_color
-) {
+void ui_init(UI *ui, Game *game, uint8_t max_FPS) {
 
     ui->game = game;
 
@@ -174,9 +175,6 @@ void ui_init(
     ui->camera_drag_prev_y = 0;
 
     ui->camera_position = 0;
-
-    ui->primary_color = primary_color;
-    ui->background_color = background_color;
 
     fill_field(ui);
 }

@@ -10,6 +10,4 @@ typedef struct Rules {
 
 Rules config_parse_rules(char *rules);
 
-uint32_t config_parse_color(char *hex_color);
-
 #endif
