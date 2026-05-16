@@ -1,40 +1,29 @@
 #include <time.h>
 
-#include <getopt.h>
-#include <unistd.h>
-
 #include "config.h"
 #include "core.h"
 #include "ui.h"
 
-int main(int argc, char *argv[]) {
+int main() {
     srand(time(NULL));
 
-    uint8_t max_FPS = 24;
+    uint8_t max_FPS = 60;
 
-    Rules rules;
-    RulesBitmap16 birth = 1 << 3, survival = 1 << 2 | 1 << 3;
+    RulesBitmap16 birth = 1u << 3;
+    RulesBitmap16 survival = (1u << 2) | (1u << 3);
 
-    int c;
-    while ((c = getopt(argc, argv, "r:f:")) != -1) {
-        switch (c) {
-        case 'r':
-            rules = config_parse_rules(optarg);
-            birth = rules.birth;
-            survival = rules.survival;
-            break;
-        case 'f':
-            max_FPS = (uint8_t)atoi(optarg);
-            break;
-        default:
-            break;
-        }
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        fprintf(stderr, "SDL_Init: %s\n", SDL_GetError());
+        SDL_Quit();
+        return EXIT_FAILURE;
     }
 
-    SDL_Init(SDL_INIT_VIDEO);
-
     SDL_DisplayMode DM;
-    SDL_GetDesktopDisplayMode(0, &DM);
+    if (SDL_GetDesktopDisplayMode(0, &DM) != 0) {
+        fprintf(stderr, "SDL_GetDesktopDisplayMode: %s\n", SDL_GetError());
+        SDL_Quit();
+        return EXIT_FAILURE;
+    }
 
     Game game;
     game_init(&game, DM.w, DM.h, birth, survival);
@@ -46,6 +35,8 @@ int main(int argc, char *argv[]) {
 
     ui_deinit(&ui);
     game_deinit(&game);
+
+    SDL_Quit();
 
     return EXIT_SUCCESS;
 }
