@@ -25,6 +25,7 @@ typedef struct UI {
     uint32_t camera_drag_prev_y;
 
     uint32_t camera_position;
+    uint16_t zoom;
 } UI;
 
 void ui_init(UI *ui, Game *game, uint8_t max_FPS);

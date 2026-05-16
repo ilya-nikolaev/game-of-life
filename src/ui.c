@@ -9,6 +9,9 @@ const uint32_t BACKGROUND_COLOR = 0x00000000;
 
 const uint8_t FILLING_PERCENTAGE = 0x33;
 
+const uint16_t MIN_ZOOM = 1;
+const uint16_t MAX_ZOOM = 16;
+
 static inline uint32_t get_cell_index(UI *ui, uint32_t pixel_index) {
     return (pixel_index + ui->camera_position) % ui->game->count;
 }
@@ -78,6 +81,18 @@ process_mouse_event(UI *ui, SDL_MouseButtonEvent *event, bool pressed) {
     }
 }
 
+static void process_mouse_wheel_event(UI *ui, SDL_MouseWheelEvent *event) {
+    if (event->y < 0) {
+        ui->zoom--;
+        if (ui->zoom < MIN_ZOOM)
+            ui->zoom = MIN_ZOOM;
+    } else {
+        ui->zoom++;
+        if (ui->zoom > MAX_ZOOM)
+            ui->zoom = MAX_ZOOM;
+    }
+}
+
 static void process_mouse_motion_event(UI *ui, SDL_MouseMotionEvent *event) {
     if (ui->is_LMB_pressed)
         update_camera_position(ui, event->x, event->y);
@@ -96,6 +111,9 @@ static void process_events(UI *ui) {
             break;
         case SDL_MOUSEBUTTONUP:
             process_mouse_event(ui, &event.button, false);
+            break;
+        case SDL_MOUSEWHEEL:
+            process_mouse_wheel_event(ui, &event.wheel);
             break;
         case SDL_MOUSEMOTION:
             process_mouse_motion_event(ui, &event.motion);
@@ -152,6 +170,7 @@ void ui_init(UI *ui, Game *game, uint8_t max_FPS) {
     ui->camera_drag_prev_y = 0;
 
     ui->camera_position = 0;
+    ui->zoom = 1;
 
     fill_field(ui);
 }
