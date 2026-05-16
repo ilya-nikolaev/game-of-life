@@ -12,24 +12,20 @@ int main() {
     RulesBitmap16 birth = 1u << 3;
     RulesBitmap16 survival = (1u << 2) | (1u << 3);
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        fprintf(stderr, "SDL_Init: %s\n", SDL_GetError());
-        SDL_Quit();
-        return EXIT_FAILURE;
-    }
+    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+        goto error;
 
     SDL_DisplayMode DM;
-    if (SDL_GetDesktopDisplayMode(0, &DM) != 0) {
-        fprintf(stderr, "SDL_GetDesktopDisplayMode: %s\n", SDL_GetError());
-        SDL_Quit();
-        return EXIT_FAILURE;
-    }
+    if (SDL_GetDesktopDisplayMode(0, &DM) != 0)
+        goto error;
 
     Game game;
-    game_init(&game, DM.w, DM.h, birth, survival);
+    if (game_init(&game, DM.w, DM.h, birth, survival) != 0)
+        goto error;
 
     UI ui;
-    ui_init(&ui, &game, max_FPS);
+    if (ui_init(&ui, &game, max_FPS) != 0)
+        goto error;
 
     ui_run(&ui);
 
@@ -37,6 +33,12 @@ int main() {
     game_deinit(&game);
 
     SDL_Quit();
-
     return EXIT_SUCCESS;
+
+error:
+    if (SDL_GetError() != 0)
+        fprintf(stderr, "SDL Error: %s\n", SDL_GetError());
+    fprintf(stderr, "Initialization failed\n");
+    SDL_Quit();
+    return EXIT_FAILURE;
 }

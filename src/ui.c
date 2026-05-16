@@ -137,21 +137,31 @@ static void draw(UI *ui) {
     SDL_RenderPresent(ui->renderer);
 }
 
-void ui_init(UI *ui, Game *game, uint8_t max_FPS) {
-
+int ui_init(UI *ui, Game *game, uint8_t max_FPS) {
     ui->game = game;
 
-    SDL_CreateWindowAndRenderer(
+    int result;
+
+    result = SDL_CreateWindowAndRenderer(
         ui->game->width, ui->game->height, 0, &ui->window, &ui->renderer
     );
+    if (result != 0)
+        return -1;
+
     ui->texture = SDL_CreateTexture(
         ui->renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STATIC,
         ui->game->width, ui->game->height
     );
+    if (ui->texture == NULL)
+    return -1;
 
-    SDL_SetWindowFullscreen(ui->window, SDL_WINDOW_FULLSCREEN);
+    result = SDL_SetWindowFullscreen(ui->window, SDL_WINDOW_FULLSCREEN);
+    if (result != 0)
+        return -1;
 
     ui->pixels = malloc(sizeof(uint32_t) * ui->game->count);
+    if (ui->pixels == NULL)
+        return -1;
 
     ui->max_FPS = max_FPS;
 
@@ -169,6 +179,8 @@ void ui_init(UI *ui, Game *game, uint8_t max_FPS) {
     ui->zoom = 1;
 
     fill_field(ui);
+
+    return 0;
 }
 
 void ui_deinit(UI *ui) {

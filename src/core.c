@@ -14,7 +14,7 @@ static inline bool cell_at(const Game *game, size_t x, size_t y) {
     return game->cells[y * game->width + x];
 }
 
-void game_init(
+int game_init(
     Game *game, size_t width, size_t height, RulesBitmap16 birth,
     RulesBitmap16 survival
 ) {
@@ -23,10 +23,17 @@ void game_init(
     game->count = width * height;
 
     game->cells = malloc(sizeof(bool) * game->count);
+    if (game->cells == NULL)
+        return -1;
+
     game->backbuffer = malloc(sizeof(bool) * game->count);
+    if (game->backbuffer == NULL)
+        return -1;
 
     game->birth = birth;
     game->survival = survival;
+
+    return 0;
 }
 
 void game_deinit(Game *game) {

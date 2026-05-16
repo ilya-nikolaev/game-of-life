@@ -19,7 +19,7 @@ typedef struct Game {
     RulesBitmap16 survival;
 } Game;
 
-void game_init(
+int game_init(
     Game *game, size_t width, size_t height, RulesBitmap16 birth,
     RulesBitmap16 survival
 );

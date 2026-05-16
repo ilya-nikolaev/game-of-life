@@ -30,7 +30,7 @@ typedef struct UI {
     uint16_t zoom;
 } UI;
 
-void ui_init(UI *ui, Game *game, uint8_t max_FPS);
+int ui_init(UI *ui, Game *game, uint8_t max_FPS);
 void ui_deinit(UI *ui);
 
 void ui_run(UI *ui);
