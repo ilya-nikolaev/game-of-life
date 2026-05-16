@@ -9,8 +9,8 @@ int main() {
 
     uint8_t max_FPS = 60;
 
-    RulesBitmap16 birth = 1u << 3;
-    RulesBitmap16 survival = (1u << 2) | (1u << 3);
+    Rules rules;
+    config_parse_rules("B3S23", &rules);
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
         goto error;
@@ -20,7 +20,7 @@ int main() {
         goto error;
 
     Game game;
-    if (game_init(&game, DM.w, DM.h, birth, survival) != 0)
+    if (game_init(&game, DM.w, DM.h, rules.b, rules.s) != 0)
         goto error;
 
     UI ui;

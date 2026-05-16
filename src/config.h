@@ -3,11 +3,12 @@
 
 #include "core.h"
 
-typedef struct Rules {
-    RulesBitmap16 birth;
-    RulesBitmap16 survival;
+typedef struct
+{
+    bool b[16];
+    bool s[16];
 } Rules;
 
-Rules config_parse_rules(const char *rules);
+void config_parse_rules(const char *rules_str, Rules* rules);
 
 #endif

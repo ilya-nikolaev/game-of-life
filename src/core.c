@@ -6,18 +6,11 @@ static inline size_t loop_index(int64_t index, size_t length) {
     return (index < 0) ? index + length : (index % length);
 }
 
-static inline bool find_rule(RulesBitmap16 rules, uint8_t alive) {
-    return rules & (1 << alive);
-}
-
 static inline bool cell_at(const Game *game, size_t x, size_t y) {
     return game->cells[y * game->width + x];
 }
 
-int game_init(
-    Game *game, size_t width, size_t height, RulesBitmap16 birth,
-    RulesBitmap16 survival
-) {
+int game_init(Game *game, size_t width, size_t height, bool *b, bool *s) {
     game->width = width;
     game->height = height;
     game->count = width * height;
@@ -30,8 +23,8 @@ int game_init(
     if (game->backbuffer == NULL)
         return -1;
 
-    game->birth = birth;
-    game->survival = survival;
+    game->b = b;
+    game->s = s;
 
     return 0;
 }
@@ -42,7 +35,7 @@ void game_deinit(Game *game) {
 }
 
 void game_step(Game *game) {
-    #pragma omp parallel for
+#pragma omp parallel for
     for (size_t i = 0; i < game->count; ++i) {
         size_t x = i % game->width, y = i / game->width;
         bool is_x_border = !x || x == game->width - 1;
@@ -65,8 +58,7 @@ void game_step(Game *game) {
             }
         }
 
-        game->backbuffer[i] = game->cells[i] ? find_rule(game->survival, alive)
-                                             : find_rule(game->birth, alive);
+        game->backbuffer[i] = game->cells[i] ? game->s[alive] : game->b[alive];
     }
 
     bool *tmp = game->cells;

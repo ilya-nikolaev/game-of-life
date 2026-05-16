@@ -10,8 +10,8 @@ typedef enum {
     SURVIVAL,
 } RulesParseState;
 
-Rules config_parse_rules(const char *rules_str) {
-    Rules rules = {0};
+
+void config_parse_rules(const char *rules_str, Rules* rules) {
     RulesParseState state = NONE;
 
     for (size_t i = 0; rules_str[i] != 0; ++i) {
@@ -23,15 +23,13 @@ Rules config_parse_rules(const char *rules_str) {
             state = SURVIVAL;
         else if (isdigit(c)) {
             uint8_t n = c - '0';
-            if (n > 8)
+            if (n > 9)
                 continue;
 
             if (state == BIRTH)
-                rules.birth |= (1u << n);
+                rules->b[n] = true;
             else if (state == SURVIVAL)
-                rules.survival |= (1u << n);
+                rules->s[n] = true;
         }
     }
-
-    return rules;
 }
