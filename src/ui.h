@@ -24,7 +24,9 @@ typedef struct UI {
     uint32_t camera_drag_prev_x;
     uint32_t camera_drag_prev_y;
 
-    uint32_t camera_position;
+    uint32_t camera_position_x;
+    uint32_t camera_position_y;
+
     uint16_t zoom;
 } UI;
 

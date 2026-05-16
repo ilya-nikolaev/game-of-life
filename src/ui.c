@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "core.h"
 #include "ui.h"
@@ -7,27 +8,19 @@
 const uint32_t PRIMARY_COLOR = 0x0000FF00;
 const uint32_t BACKGROUND_COLOR = 0x00000000;
 
-const uint8_t FILLING_PERCENTAGE = 0x33;
-
 const uint16_t MIN_ZOOM = 1;
 const uint16_t MAX_ZOOM = 16;
 
-static inline uint32_t get_cell_index(UI *ui, uint32_t pixel_index) {
-    return (pixel_index + ui->camera_position) % ui->game->count;
-}
-
-static inline uint32_t get_cell_value(UI *ui, uint32_t pixel_index) {
-    return ui->game->cells[get_cell_index(ui, pixel_index)];
-}
+const uint16_t FILLING_PERCENTAGE = 0xF0;
+const uint16_t FILLING_LIMIT = 0x3FF;
 
 static void fill_field(UI *ui) {
     for (size_t i = 0; i < ui->game->count; ++i)
-        ui->game->cells[i] = (rand() & 0xFF) < FILLING_PERCENTAGE;
+        ui->game->cells[i] = (rand() & FILLING_LIMIT) < FILLING_PERCENTAGE;
 }
 
-static void clear_field(UI *ui) {
-    for (size_t i = 0; i < ui->game->count; ++i)
-        ui->game->cells[i] = false;
+static inline void clear_field(UI *ui) {
+    memset(ui->game->cells, 0, ui->game->count);
 }
 
 static void process_keyboard_event(UI *ui, SDL_KeyboardEvent *event) {
@@ -55,9 +48,8 @@ static void update_camera_position(
     int32_t dx = ui->camera_drag_prev_x - camera_drag_curr_x;
     int32_t dy = ui->camera_drag_prev_y - camera_drag_curr_y;
 
-    ui->camera_position =
-        (ui->camera_position + dx + dy * ui->game->width + ui->game->count) %
-        ui->game->count;
+    ui->camera_position_x = (ui->camera_position_x + dx) % ui->game->width;
+    ui->camera_position_y = (ui->camera_position_y + dy) % ui->game->height;
 
     ui->camera_drag_prev_x = camera_drag_curr_x;
     ui->camera_drag_prev_y = camera_drag_curr_y;
@@ -127,14 +119,16 @@ static void process_events(UI *ui) {
     }
 }
 
-static inline uint32_t get_cell_color(UI *ui, uint32_t pixel_index) {
-    uint32_t value = get_cell_value(ui, pixel_index);
-    return value ? PRIMARY_COLOR : BACKGROUND_COLOR;
-}
-
 static void draw(UI *ui) {
-    for (size_t index = 0; index < ui->game->count; ++index)
-        ui->pixels[index] = get_cell_color(ui, index);
+    size_t shifted_index;
+    size_t shift =
+        ui->camera_position_x + ui->camera_position_y * ui->game->width;
+
+    for (size_t index = 0; index < ui->game->count; ++index) {
+        shifted_index = (index + shift) % ui->game->count;
+        ui->pixels[index] =
+            ui->game->cells[shifted_index] ? PRIMARY_COLOR : BACKGROUND_COLOR;
+    }
 
     SDL_UpdateTexture(
         ui->texture, NULL, ui->pixels, ui->game->width * sizeof(uint32_t)
@@ -169,7 +163,9 @@ void ui_init(UI *ui, Game *game, uint8_t max_FPS) {
     ui->camera_drag_prev_x = 0;
     ui->camera_drag_prev_y = 0;
 
-    ui->camera_position = 0;
+    ui->camera_position_x = 0;
+    ui->camera_position_y = 0;
+
     ui->zoom = 1;
 
     fill_field(ui);
