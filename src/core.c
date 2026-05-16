@@ -42,6 +42,7 @@ void game_deinit(Game *game) {
 }
 
 void game_step(Game *game) {
+    #pragma omp parallel for
     for (size_t i = 0; i < game->count; ++i) {
         size_t x = i % game->width, y = i / game->width;
         bool is_x_border = !x || x == game->width - 1;
