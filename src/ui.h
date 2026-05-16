@@ -10,6 +10,11 @@ typedef struct {
     int32_t offset_y_px;
 
     uint8_t zoom;
+
+    float velocity_x;
+    float velocity_y;
+    float accum_x;
+    float accum_y;
 } Camera;
 
 typedef struct {
@@ -33,6 +38,10 @@ typedef struct {
 
     int32_t last_mouse_pos_x;
     int32_t last_mouse_pos_y;
+
+    uint32_t last_motion_time;
+    float smooth_vel_x;
+    float smooth_vel_y;
 } InputState;
 
 typedef struct {

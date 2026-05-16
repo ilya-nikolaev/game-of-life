@@ -61,12 +61,18 @@ static void process_mouse_event(
     switch (event->button) {
     case SDL_BUTTON_LEFT:
         if (pressed && !input->pressed_lmb) {
+            camera->velocity_x = 0;
+            camera->velocity_y = 0;
             input->drag_prev_x = event->x;
             input->drag_prev_y = event->y;
         } else if (pressed) {
             update_camera_position(input, camera, event->x, event->y);
         }
 
+        if (!pressed && input->pressed_lmb) {
+            camera->velocity_x = input->smooth_vel_x;
+            camera->velocity_y = input->smooth_vel_y;
+        }
         input->pressed_lmb = pressed;
         break;
     default:
@@ -103,8 +109,34 @@ static void process_mouse_motion_event(
     input->last_mouse_pos_x = event->x;
     input->last_mouse_pos_y = event->y;
 
-    if (input->pressed_lmb)
-        update_camera_position(input, camera, event->x, event->y);
+    uint32_t now = SDL_GetTicks();
+    float dt = (now - input->last_motion_time) / 1000.0f;
+    if (dt <= 0.0f)
+        dt = 0.001f;
+
+    if (input->pressed_lmb) {
+        float vx = (input->drag_prev_x - event->x) / dt;
+        float vy = (input->drag_prev_y - event->y) / dt;
+
+        float alpha = 0.3f;
+        input->smooth_vel_x =
+            input->smooth_vel_x * (1.0f - alpha) + vx * alpha;
+        input->smooth_vel_y =
+            input->smooth_vel_y * (1.0f - alpha) + vy * alpha;
+
+        camera->offset_x_px += input->drag_prev_x - event->x;
+        camera->offset_y_px += input->drag_prev_y - event->y;
+        input->drag_prev_x = event->x;
+        input->drag_prev_y = event->y;
+
+        camera->velocity_x = 0.0f;
+        camera->velocity_y = 0.0f;
+    } else {
+        input->smooth_vel_x = 0.0f;
+        input->smooth_vel_y = 0.0f;
+    }
+
+    input->last_motion_time = now;
 }
 
 static void process_events(Engine *engine) {
@@ -274,6 +306,10 @@ int engine_init(Engine *engine, Game *game, uint8_t tickrate) {
     camera.offset_x_px = 0;
     camera.offset_y_px = 0;
     camera.zoom = 1;
+    camera.velocity_x = 0.0f;
+    camera.velocity_y = 0.0f;
+    camera.accum_x = 0.0f;
+    camera.accum_y = 0.0f;
     engine->camera = camera;
 
     InputState input;
@@ -282,6 +318,9 @@ int engine_init(Engine *engine, Game *game, uint8_t tickrate) {
     input.drag_prev_y = 0;
     input.last_mouse_pos_x = 0;
     input.last_mouse_pos_y = 0;
+    input.last_motion_time = SDL_GetTicks();
+    input.smooth_vel_x = 0.0f;
+    input.smooth_vel_y = 0.0f;
     engine->input = input;
 
     engine->tickrate = tickrate;
@@ -304,15 +343,47 @@ void engine_deinit(Engine *engine) {
     SDL_Quit();
 }
 
+static void update_camera_physics(Camera *camera, float delta_time_seconds) {
+    const float friction = 0.1f;
+    float damping = powf(friction, delta_time_seconds);
+
+    camera->accum_x += camera->velocity_x * delta_time_seconds;
+    camera->accum_y += camera->velocity_y * delta_time_seconds;
+
+    int32_t dx = (int32_t)camera->accum_x;
+    int32_t dy = (int32_t)camera->accum_y;
+    camera->offset_x_px += dx;
+    camera->offset_y_px += dy;
+    camera->accum_x -= dx;
+    camera->accum_y -= dy;
+
+    camera->velocity_x *= damping;
+    camera->velocity_y *= damping;
+
+    if (fabsf(camera->velocity_x) < 0.1f && fabsf(camera->velocity_y) < 0.1f) {
+        camera->velocity_x = 0.0f;
+        camera->velocity_y = 0.0f;
+    }
+}
+
 void engine_run(Engine *engine) {
     double max_delay =
         (engine->tickrate == 0) ? 0.0 : 1000.0 / engine->tickrate;
-
     uint32_t prev_tick = SDL_GetTicks();
+    uint64_t perf_freq = SDL_GetPerformanceFrequency();
+    uint64_t last_counter = SDL_GetPerformanceCounter();
 
     while (engine->running) {
         process_events(engine);
-        draw(engine);
+
+        uint64_t current_counter = SDL_GetPerformanceCounter();
+        float frame_dt =
+            (float)((current_counter - last_counter) / (double)perf_freq);
+        last_counter = current_counter;
+        if (frame_dt > 0.1f)
+            frame_dt = 0.1f;
+
+        update_camera_physics(&engine->camera, frame_dt);
 
         uint32_t curr_tick = SDL_GetTicks();
         uint32_t delta = curr_tick - prev_tick;
@@ -323,5 +394,7 @@ void engine_run(Engine *engine) {
 
             prev_tick = curr_tick;
         }
+
+        draw(engine);
     }
 }
