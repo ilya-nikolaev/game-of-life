@@ -30,6 +30,9 @@ typedef struct {
 
     int32_t drag_prev_x;
     int32_t drag_prev_y;
+
+    int32_t last_mouse_pos_x;
+    int32_t last_mouse_pos_y;
 } InputState;
 
 typedef struct {

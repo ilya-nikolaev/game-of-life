@@ -74,12 +74,25 @@ static void process_mouse_event(
     }
 }
 
-static void
-process_mouse_wheel_event(Camera *camera, SDL_MouseWheelEvent *event) {
+static void process_mouse_wheel_event(
+    InputState *input,
+    Camera *camera,
+    SDL_MouseWheelEvent *event
+) {
+    float world_x =
+        (camera->offset_x_px + input->last_mouse_pos_x) / (float)camera->zoom;
+    float world_y =
+        (camera->offset_y_px + input->last_mouse_pos_y) / (float)camera->zoom;
+
     if (event->y < 0)
         camera->zoom = MAX(camera->zoom - 1, MIN_ZOOM);
     else
         camera->zoom = MIN(camera->zoom + 1, MAX_ZOOM);
+
+    camera->offset_x_px =
+        (int32_t)(world_x * camera->zoom - input->last_mouse_pos_x);
+    camera->offset_y_px =
+        (int32_t)(world_y * camera->zoom - input->last_mouse_pos_y);
 }
 
 static void process_mouse_motion_event(
@@ -87,6 +100,9 @@ static void process_mouse_motion_event(
     Camera *camera,
     SDL_MouseMotionEvent *event
 ) {
+    input->last_mouse_pos_x = event->x;
+    input->last_mouse_pos_y = event->y;
+
     if (input->pressed_lmb)
         update_camera_position(input, camera, event->x, event->y);
 }
@@ -116,7 +132,11 @@ static void process_events(Engine *engine) {
             );
             break;
         case SDL_MOUSEWHEEL:
-            process_mouse_wheel_event(&engine->camera, &event.wheel);
+            process_mouse_wheel_event(
+                &engine->input,
+                &engine->camera,
+                &event.wheel
+            );
             break;
         case SDL_MOUSEMOTION:
             process_mouse_motion_event(
@@ -260,6 +280,8 @@ int engine_init(Engine *engine, Game *game, uint8_t tickrate) {
     input.pressed_lmb = false;
     input.drag_prev_x = 0;
     input.drag_prev_y = 0;
+    input.last_mouse_pos_x = 0;
+    input.last_mouse_pos_y = 0;
     engine->input = input;
 
     engine->tickrate = tickrate;
@@ -286,32 +308,18 @@ void engine_run(Engine *engine) {
     double max_delay =
         (engine->tickrate == 0) ? 0.0 : 1000.0 / engine->tickrate;
 
-    uint64_t perf_freq = SDL_GetPerformanceFrequency();
-
     uint32_t prev_tick = SDL_GetTicks();
 
     while (engine->running) {
         process_events(engine);
-
-        uint64_t render_begin = SDL_GetPerformanceCounter();
         draw(engine);
-        uint64_t render_end = SDL_GetPerformanceCounter();
-        double render_ms =
-            (double)(render_end - render_begin) * 1000.0 / perf_freq;
 
         uint32_t curr_tick = SDL_GetTicks();
         uint32_t delta = curr_tick - prev_tick;
 
         if (delta >= max_delay) {
-            if (!engine->paused) {
-                uint64_t step_begin = SDL_GetPerformanceCounter();
+            if (!engine->paused)
                 game_step(engine->game);
-                uint64_t step_end = SDL_GetPerformanceCounter();
-                double step_ms =
-                    (double)(step_end - step_begin) * 1000.0 / perf_freq;
-
-                SDL_Log("step: %.3f ms | render: %.3f ms", step_ms, render_ms);
-            }
 
             prev_tick = curr_tick;
         }
