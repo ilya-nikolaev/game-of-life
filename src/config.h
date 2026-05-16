@@ -8,6 +8,6 @@ typedef struct Rules {
     RulesBitmap16 survival;
 } Rules;
 
-Rules config_parse_rules(char *rules);
+Rules config_parse_rules(const char *rules);
 
 #endif

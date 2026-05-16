@@ -10,7 +10,7 @@ typedef enum {
     SURVIVAL,
 } RulesParseState;
 
-Rules config_parse_rules(char *rules_str) {
+Rules config_parse_rules(const char *rules_str) {
     Rules rules = {0};
     RulesParseState state = NONE;
 
@@ -27,9 +27,9 @@ Rules config_parse_rules(char *rules_str) {
                 continue;
 
             if (state == BIRTH)
-                rules.birth |= (1 << n);
+                rules.birth |= (1u << n);
             else if (state == SURVIVAL)
-                rules.survival |= (1 << n);
+                rules.survival |= (1u << n);
         }
     }
 
