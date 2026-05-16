@@ -1,7 +1,25 @@
 ---
 BasedOnStyle: LLVM
+
 IndentWidth: 4
+
+ColumnLimit: 79
+
+AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+BinPackArguments: false
+BinPackParameters: false
+
+PenaltyBreakBeforeFirstCallParameter: 1
+
 AlignAfterOpenBracket: BlockIndent
 AlignOperands: DontAlign
-ColumnLimit: 79
+
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Never
+AllowShortLoopsOnASingleLine: false
+
+BreakBeforeBinaryOperators: None
+
+ContinuationIndentWidth: 4
 ---
