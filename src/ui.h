@@ -5,34 +5,50 @@
 
 #include "core.h"
 
-typedef struct UI {
+typedef struct {
+    int32_t offset_x_px;
+    int32_t offset_y_px;
+
+    uint8_t zoom;
+} Camera;
+
+typedef struct {
     SDL_Renderer *renderer;
     SDL_Window *window;
     SDL_Texture *texture;
 
+    uint32_t width;
+    uint32_t height;
+
+    size_t count;
+
     uint32_t *pixels;
+} Screen;
+
+typedef struct {
+    bool pressed_lmb;
+
+    int32_t drag_prev_x;
+    int32_t drag_prev_y;
+} InputState;
+
+typedef struct {
+    Camera camera;
+    Screen screen;
+
+    InputState input;
 
     Game *game;
 
-    uint8_t max_FPS;
+    uint8_t tickrate;
 
-    bool is_running;
-    bool is_paused;
+    bool running;
+    bool paused;
+} Engine;
 
-    bool is_LMB_pressed;
+int engine_init(Engine *engine, Game *game, uint8_t tickrate);
+void engine_deinit(Engine *engine);
 
-    uint32_t camera_drag_prev_x;
-    uint32_t camera_drag_prev_y;
-
-    uint32_t camera_position_x;
-    uint32_t camera_position_y;
-
-    uint16_t zoom;
-} UI;
-
-int ui_init(UI *ui, Game *game, uint8_t max_FPS);
-void ui_deinit(UI *ui);
-
-void ui_run(UI *ui);
+void engine_run(Engine *engine);
 
 #endif
