@@ -4,32 +4,33 @@
 #include "core.h"
 #include "ui.h"
 
+const uint8_t TICKRATE = 60;
+
+const size_t BOARD_SIZE_X = 1920;
+const size_t BOARD_SIZE_Y = 1080;
+
+const char *RULES_STRING = "B3S23";
+
 int main() {
     srand(time(NULL));
 
-    uint8_t max_FPS = 60;
-
     Rules rules;
-    config_parse_rules("B3S23", &rules);
+    config_parse_rules(RULES_STRING, &rules);
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
         goto error;
 
-    SDL_DisplayMode DM;
-    if (SDL_GetDesktopDisplayMode(0, &DM) != 0)
-        goto error;
-
     Game game;
-    if (game_init(&game, DM.w, DM.h, rules.b, rules.s) != 0)
+    if (game_init(&game, BOARD_SIZE_X, BOARD_SIZE_Y, rules.b, rules.s) != 0)
         goto error;
 
-    UI ui;
-    if (ui_init(&ui, &game, max_FPS) != 0)
+    Engine engine;
+    if (engine_init(&engine, &game, TICKRATE) != 0)
         goto error;
 
-    ui_run(&ui);
+    engine_run(&engine);
 
-    ui_deinit(&ui);
+    engine_deinit(&engine);
     game_deinit(&game);
 
     SDL_Quit();
