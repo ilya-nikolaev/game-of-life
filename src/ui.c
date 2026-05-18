@@ -24,9 +24,6 @@ static void process_keyboard_event(Engine *engine, SDL_KeyboardEvent *event) {
     case SDLK_r:
         game_randomize_field(engine->game);
         break;
-    case SDLK_c:
-        memset(engine->game->cells, 0, engine->game->count);
-        break;
     default:
         break;
     }
