@@ -7,20 +7,15 @@ The Game of Life, also known simply as Life, is a cellular automaton devised by 
 
 ## Implementation
 
-This implementation is written in C99 using the standard library, unistd.h, and the SDL2 library.
-
-## Console line parameters
-
-- `-r {string}` - game rules (e.g., `-r B368/S245`, default `B3/S23`)
-- `-f {int}` - maximum FPS (also determines ticks per second, default `24`)
+This implementation is written in C99 using the standard library, OpenMP and the SDL2 library.
 
 ## Controls
 
 - `Esc` - exit
-- `Space` - pause
-- `R` - reset field
-- `C` - clear field
+- `R` - randomize field
+- `Space` - play/pause
 - `LMB` - pan around the board
+- `MWHEELUP`/`MWHEELDOWN` - zoom
 
 ## Build
 
@@ -28,7 +23,8 @@ This implementation is written in C99 using the standard library, unistd.h, and 
 git clone https://github.com/ilya-nikolaev/ConwaysGameOfLife.git
 cd ConwaysGameOfLife
 mkdir build && cd build
-cmake .. && make
+cmake ..
+cmake --build .
 ./game
 ```
 
@@ -40,8 +36,8 @@ cmake .. && make
 - [X] **Camera Control**
       Pan around the board via MMB
 
-- [ ] **Zoom Functionality**
+- [X] **Zoom Functionality**
       Allow zooming in/out with `MWHEELUP` and `MWHEELDOWN` keys
 
-- [ ] **Grid**
-      Allow to enable grid with zoom >= 3
+- [ ] **Improve performace**
+      The goal is 60 FPS on a Ryzen 7 7700 with 4k resolution and a 4096x4096 field.

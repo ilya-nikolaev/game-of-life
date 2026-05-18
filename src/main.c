@@ -6,8 +6,8 @@
 
 const uint8_t TICKRATE = 60;
 
-const size_t BOARD_SIZE_X = 3840;
-const size_t BOARD_SIZE_Y = 2160;
+const size_t BOARD_SIZE_X = 4096;
+const size_t BOARD_SIZE_Y = 4096;
 
 const char *RULES_STRING = "B3S23";
 
