@@ -9,11 +9,12 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
+find_package(OpenMP REQUIRED)
 find_package(SDL2 REQUIRED)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wpedantic")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -O0")
-set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -march=native -fopenmp")
+set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -march=native")
 
 set(SOURCES
     src/main.c
@@ -25,4 +26,4 @@ set(SOURCES
 add_executable(game ${SOURCES})
 
 target_include_directories(game PRIVATE ${SDL2_INCLUDE_DIRS})
-target_link_libraries(game PRIVATE SDL2main SDL2 m)
+target_link_libraries(game PRIVATE SDL2main SDL2 m OpenMP::OpenMP_C)
