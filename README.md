@@ -34,10 +34,13 @@ cmake --build .
       Support definitions like `x == 5`, `y == x`, `(x + y) % 2 == 0`
 
 - [X] **Camera Control**
-      Pan around the board via MMB
+      Pan around the board via LMB
 
 - [X] **Zoom Functionality**
       Allow zooming in/out with `MWHEELUP` and `MWHEELDOWN` keys
 
 - [ ] **Improve performace**
       The goal is 60 FPS on a Ryzen 7 7700 with 4k resolution and a 4096x4096 field.
+
+- [ ] **CLI**
+      Allow to use CLI arguments without getopt dependency
