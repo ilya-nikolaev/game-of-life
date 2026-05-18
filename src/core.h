@@ -20,6 +20,8 @@ typedef struct Game {
 int game_init(Game *game, size_t width, size_t height, bool* b, bool* s);
 void game_deinit(Game *game);
 
+void game_randomize_field(Game *game);
+
 void game_step(Game *game);
 
 #endif

@@ -13,14 +13,6 @@ const uint32_t PRIMARY_COLOR = 0x0000FF00;
 const uint16_t MIN_ZOOM = 1;
 const uint16_t MAX_ZOOM = 128;
 
-const uint16_t FILLING_THRESHOLD = 0xF0;
-const uint16_t FILLING_LIMIT = 0x3FF;
-
-static void fill_field(Game *game) {
-    for (size_t i = 0; i < game->count; ++i)
-        game->cells[i] = (rand() & FILLING_LIMIT) < FILLING_THRESHOLD;
-}
-
 static void process_keyboard_event(Engine *engine, SDL_KeyboardEvent *event) {
     switch (event->keysym.sym) {
     case SDLK_ESCAPE:
@@ -30,7 +22,7 @@ static void process_keyboard_event(Engine *engine, SDL_KeyboardEvent *event) {
         engine->paused = !engine->paused;
         break;
     case SDLK_r:
-        fill_field(engine->game);
+        game_randomize_field(engine->game);
         break;
     case SDLK_c:
         memset(engine->game->cells, 0, engine->game->count);
@@ -328,7 +320,7 @@ int engine_init(Engine *engine, Game *game, uint8_t tickrate) {
     engine->running = true;
     engine->paused = false;
 
-    fill_field(game);
+    game_randomize_field(game);
 
     return 0;
 }

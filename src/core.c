@@ -2,12 +2,20 @@
 
 #include "core.h"
 
+const uint16_t FILLING_THRESHOLD = 0xF0;
+const uint16_t FILLING_LIMIT = 0x3FF;
+
 static inline size_t loop_index(int64_t index, size_t length) {
     return (index < 0) ? index + length : (index % length);
 }
 
 static inline bool cell_at(const Game *game, size_t x, size_t y) {
     return game->cells[y * game->width + x];
+}
+
+void game_randomize_field(Game *game) {
+    for (size_t i = 0; i < game->count; ++i)
+        game->cells[i] = (rand() & FILLING_LIMIT) < FILLING_THRESHOLD;
 }
 
 int game_init(Game *game, size_t width, size_t height, bool *b, bool *s) {

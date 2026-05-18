@@ -40,6 +40,7 @@ typedef struct {
     int32_t last_mouse_pos_y;
 
     uint32_t last_motion_time;
+
     float smooth_vel_x;
     float smooth_vel_y;
 } InputState;
