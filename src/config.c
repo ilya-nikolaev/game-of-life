@@ -1,6 +1,7 @@
 #include <ctype.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
 #include "config.h"
 
@@ -12,6 +13,8 @@ typedef enum {
 
 
 void config_parse_rules(const char *rules_str, Rules* rules) {
+    memset(rules, 0, sizeof *rules);
+
     RulesParseState state = NONE;
 
     for (size_t i = 0; rules_str[i] != 0; ++i) {
